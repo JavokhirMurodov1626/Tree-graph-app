@@ -1,0 +1,11 @@
+.toolbox {
+  display: flex;
+  max-width: max-content;
+}
+
+.toolbox-container {
+  /* background-color: orange; */
+  display: flex;
+  justify-content: space-between;
+  box-shadow: rgba(0, 0, 0, 0.18) 0px 2px 4px;
+}
