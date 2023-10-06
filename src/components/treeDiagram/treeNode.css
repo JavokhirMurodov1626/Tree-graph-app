@@ -107,4 +107,5 @@
 }
 .root-node{
     border: 2px dashed #ccc!important;
+    cursor: move;
 }

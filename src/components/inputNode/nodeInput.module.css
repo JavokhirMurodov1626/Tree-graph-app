@@ -1,0 +1,10 @@
+.node-input-form{
+    max-width: 180px;
+    display: flex;
+    gap: 10px;
+}
+.node-input-btn-group{
+    display: flex;
+    gap: 4px;
+    color: rgba(248, 248, 4, 0.799);
+}

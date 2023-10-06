@@ -1,11 +1,12 @@
 import { TreeNodeModel } from "../../models/treeNode";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useState } from "react";
 import "./treeNode.css";
+import InputNode from "../inputNode/inputNode";
 
 interface TreeNodeProps {
   title: string;
   children: ReactNode;
-  onAddChild: () => void;
+  onAddChild: (label: string) => void;
   layer: number;
   nodeChildren: TreeNodeModel[];
 }
@@ -29,18 +30,27 @@ const TreeNode: React.FC<TreeNodeProps> = ({
   layer,
   nodeChildren,
 }) => {
+  const [showInput, setShowInput] = useState(false);
+
   const nodeColor = getColorForLayer(layer);
+
+  const addInputNode = () => {
+    setShowInput(true);
+  };
+
+  const closeInputNode = () => {
+    setShowInput(false);
+  };
 
   return (
     <li>
       <div
-        
         style={{ backgroundColor: nodeColor }}
         className={`${layer === 0 ? "root-node" : ""} node`}
       >
         <span className="label">{title}</span>
         <div className="btn-group">
-          <button onClick={onAddChild} type="button" className="button">
+          <button onClick={addInputNode} type="button" className="button">
             <i
               className="bi bi-plus-circle-fill"
               style={{ fontSize: "16px", color: "lightgrey" }}
@@ -60,7 +70,19 @@ const TreeNode: React.FC<TreeNodeProps> = ({
           </button>
         </div>
       </div>
-      {nodeChildren.length > 0 && <ul>{children}</ul>}
+      {(nodeChildren.length > 0 || showInput) && (
+        <ul>
+          {children}
+          {showInput && (
+            <li>
+              <InputNode
+                closeInputNode={closeInputNode}
+                addInputNode={onAddChild}
+              />
+            </li>
+          )}
+        </ul>
+      )}
     </li>
   );
 };
