@@ -8,7 +8,7 @@ const TreeDiagram = () => {
   const rootNodeRef = useRef<HTMLDivElement>(null);
 
   const [rootNode, setRootNode] = useState<TreeNodeModel>(
-    new TreeNodeModel("firstNode", [])
+    new TreeNodeModel("firstNode", [], 0)
   );
 
   const isClicked = useRef<boolean>(false);
@@ -74,7 +74,11 @@ const TreeDiagram = () => {
   }, []);
 
   const addChild = (parent: TreeNodeModel) => {
-    const newChild = new TreeNodeModel("new Node", []);
+    const newChild = new TreeNodeModel(
+      `Child ${parent.nodeChildren.length + 1}`,
+      [],
+      parent.layer + 1
+    );
 
     parent.nodeChildren.push(newChild);
     setRootNode({ ...rootNode }); // Trigger a re-render
@@ -83,9 +87,11 @@ const TreeDiagram = () => {
   const renderNode = (node: TreeNodeModel) => {
     return (
       <TreeNode
+        layer={node.layer}
         key={node.id}
         title={node.title}
         onAddChild={() => addChild(node)}
+        nodeChildren={node.nodeChildren}
       >
         {node.nodeChildren.map(renderNode)}
       </TreeNode>
@@ -93,13 +99,15 @@ const TreeDiagram = () => {
   };
   return (
     <section ref={movingAreaRef} className={styles["tree-playground"]}>
-      <div  className={styles["root-node-wrap"]}>
+      {/* <div className={styles["root-node-wrap"]}>
         <p className={`${styles["root-node"]} m-0`}>categories</p>
         <button className={styles["root-node__btn"]}>
           <i className="bi bi-plus-circle" style={{ fontSize: "20px" }}></i>
         </button>
+      </div> */}
+      <div ref={rootNodeRef} className={`${styles.tree} tree`}>
+        {renderNode(rootNode)}
       </div>
-      <div ref={rootNodeRef} className={styles.tree}>{renderNode(rootNode)}</div>
     </section>
   );
 };
