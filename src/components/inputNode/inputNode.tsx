@@ -2,13 +2,21 @@ import styles from "./nodeInput.module.css";
 import { useState, useRef, useEffect } from "react";
 
 interface InputNodeProps {
+  label?: string;
+  isEditing?: boolean;
   closeInputNode: () => void;
   addInputNode: (label: string) => void;
+  changeEditMode?: () => void;
+  editInputNode?: (label: string) => void;
 }
 
 const InputNode: React.FC<InputNodeProps> = ({
+  label,
+  isEditing,
   closeInputNode,
   addInputNode,
+  changeEditMode,
+  editInputNode,
 }) => {
   const [nodeLabel, setNodeLabel] = useState("");
   const focusRef = useRef<HTMLInputElement>(null);
@@ -19,24 +27,35 @@ const InputNode: React.FC<InputNodeProps> = ({
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if(!nodeLabel){
+
+    if (!nodeLabel) {
       alert("Input is empty!!");
       return;
-    };
-    addInputNode(nodeLabel);
-    closeInputNode();
+    }
+    if (!isEditing) {
+      addInputNode(nodeLabel);
+      closeInputNode();
+    } else {
+      if (editInputNode) {
+        editInputNode(nodeLabel);
+      }
+    }
+
+    if (changeEditMode) changeEditMode();
   };
 
   useEffect(() => {
     if (focusRef.current) {
       focusRef.current.focus();
     }
-  }, []);
+    if (isEditing) setNodeLabel(label || "");
+  }, [isEditing]);
 
   return (
     <form onSubmit={submit} className={styles["node-input-form"]}>
       <input
         ref={focusRef}
+        defaultValue={nodeLabel}
         type="text"
         placeholder="Category Name"
         className="form-control"
@@ -49,6 +68,7 @@ const InputNode: React.FC<InputNodeProps> = ({
           onClick={closeInputNode}
         >
           <i
+            onClick={changeEditMode}
             className="bi bi-x-circle-fill"
             style={{ fontSize: "16px", color: "orange" }}
           ></i>

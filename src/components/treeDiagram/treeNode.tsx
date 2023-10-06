@@ -7,6 +7,8 @@ interface TreeNodeProps {
   title: string;
   children: ReactNode;
   onAddChild: (label: string) => void;
+  onRemoveChild: () => void;
+  onEditChild: (label: string) => void;
   layer: number;
   nodeChildren: TreeNodeModel[];
 }
@@ -27,10 +29,13 @@ const TreeNode: React.FC<TreeNodeProps> = ({
   title,
   children,
   onAddChild,
+  onRemoveChild,
+  onEditChild,
   layer,
   nodeChildren,
 }) => {
   const [showInput, setShowInput] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
   const nodeColor = getColorForLayer(layer);
 
@@ -42,34 +47,54 @@ const TreeNode: React.FC<TreeNodeProps> = ({
     setShowInput(false);
   };
 
+  const changeEditMode = () => {
+    setIsEditing((previousState) => !previousState);
+  };
+
   return (
     <li>
-      <div
-        style={{ backgroundColor: nodeColor }}
-        className={`${layer === 0 ? "root-node" : ""} node`}
-      >
-        <span className="label">{title}</span>
-        <div className="btn-group">
-          <button onClick={addInputNode} type="button" className="button">
-            <i
-              className="bi bi-plus-circle-fill"
-              style={{ fontSize: "16px", color: "lightgrey" }}
-            ></i>
-          </button>
-          <button type="button" className="button button-edit">
-            <i
-              className="bi bi-pencil-square"
-              style={{ fontSize: "16px", color: "lightgrey" }}
-            ></i>
-          </button>
-          <button type="button" className="button button-close">
-            <i
-              className="bi bi-x-circle-fill"
-              style={{ fontSize: "16px", color: "red" }}
-            ></i>
-          </button>
+      {isEditing ? (
+        <li>
+          <InputNode
+            label={title}
+            isEditing={isEditing}
+            closeInputNode={closeInputNode}
+            addInputNode={onAddChild}
+            editInputNode={onEditChild}
+            changeEditMode={changeEditMode}
+          />
+        </li>
+      ) : (
+        <div
+          style={{ backgroundColor: nodeColor }}
+          className={`${layer === 0 ? "root-node" : ""} node`}
+        >
+          <span className="label">{title}</span>
+          <div className="btn-group">
+            <button onClick={addInputNode} type="button" className="button">
+              <i
+                className="bi bi-plus-circle-fill"
+                style={{ fontSize: "16px", color: "lightgrey" }}
+              ></i>
+            </button>
+            <button type="button" className="button button-edit">
+              <i
+                className="bi bi-pencil-square"
+                style={{ fontSize: "16px", color: "lightgrey" }}
+                onClick={changeEditMode}
+              ></i>
+            </button>
+            <button type="button" className="button button-close">
+              <i
+                className="bi bi-x-circle-fill"
+                style={{ fontSize: "16px", color: "red" }}
+                onClick={onRemoveChild}
+              ></i>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
+
       {(nodeChildren.length > 0 || showInput) && (
         <ul>
           {children}

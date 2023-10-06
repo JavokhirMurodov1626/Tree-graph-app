@@ -73,27 +73,49 @@ const TreeDiagram = () => {
     };
   }, []);
 
-  const addChild = (parent: TreeNodeModel,label:string) => {
-    const newChild = new TreeNodeModel(
-      label,
-      [],
-      parent.layer + 1
-    );
+  const addChild = (parent: TreeNodeModel, label: string) => {
+    const newChild = new TreeNodeModel(label, [], parent.layer + 1);
 
     parent.nodeChildren.push(newChild);
     setRootNode({ ...rootNode }); // Trigger a re-render
   };
 
-  const renderNode = (node: TreeNodeModel) => {
+  const removeNode = (parent: TreeNodeModel, nodeId: string) => {
+    parent.nodeChildren = parent.nodeChildren.filter(
+      (node) => node.id !== nodeId
+    );
+    setRootNode({ ...rootNode });
+  };
+
+  const editNode = (parent: TreeNodeModel, nodeId: string,label:string) => {
+
+    const selectedNode=parent.nodeChildren.find((child)=>child.id===nodeId);
+
+    if(selectedNode){
+      selectedNode.title=label;
+    }else{
+      alert('there is no such node in the tree!')
+    }
+
+    setRootNode({ ...rootNode });
+  };
+
+  //rendering tree node's recursively
+  const renderNode = (
+    node: TreeNodeModel,
+    parent: TreeNodeModel = rootNode
+  ) => {
     return (
       <TreeNode
         layer={node.layer}
         key={node.id}
         title={node.title}
-        onAddChild={(label:string) => addChild(node,label)}
+        onAddChild={(label: string) => addChild(node, label)}
+        onRemoveChild={() => removeNode(parent, node.id)}
+        onEditChild={(label)=>editNode(parent,node.id,label)}
         nodeChildren={node.nodeChildren}
       >
-        {node.nodeChildren.map(renderNode)}
+        {node.nodeChildren.map((child) => renderNode(child, node))}
       </TreeNode>
     );
   };
