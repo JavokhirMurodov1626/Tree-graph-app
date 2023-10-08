@@ -1,9 +1,11 @@
 import styles from "./treeDiagram.module.css";
 import { useEffect, useRef, useState } from "react";
+
 import { TreeNodeModel } from "../../models/treeNode";
 import TreeNode from "./treeNode";
+import { ZoomState } from "../toolbox/zoomReducer";
 
-const TreeDiagram = () => {
+const TreeDiagram: React.FC<{ zoomState: ZoomState }> = ({ zoomState }) => {
   const movingAreaRef = useRef<HTMLDivElement>(null);
   const rootNodeRef = useRef<HTMLDivElement>(null);
 
@@ -65,13 +67,17 @@ const TreeDiagram = () => {
     movingArea.addEventListener("mousemove", mouseMoveHandler);
     movingArea.addEventListener("mouseleave", mouseUpHandler);
 
+
+    //applying scale of tree zooming...
+    rootNodeRef.current.style.transform=`scale(${zoomState.zoomLevel/100})`
+
     return () => {
       rootNode.removeEventListener("mousedown", mouseDownHandler);
       rootNode.removeEventListener("mouseup", mouseUpHandler);
       movingArea.removeEventListener("mousemove", mouseMoveHandler);
       movingArea.removeEventListener("mouseleave", mouseUpHandler);
     };
-  }, []);
+  }, [zoomState]);
 
   const addChild = (parent: TreeNodeModel, label: string) => {
     const newChild = new TreeNodeModel(label, [], parent.layer + 1);
@@ -87,14 +93,15 @@ const TreeDiagram = () => {
     setRootNode({ ...rootNode });
   };
 
-  const editNode = (parent: TreeNodeModel, nodeId: string,label:string) => {
+  const editNode = (parent: TreeNodeModel, nodeId: string, label: string) => {
+    const selectedNode = parent.nodeChildren.find(
+      (child) => child.id === nodeId
+    );
 
-    const selectedNode=parent.nodeChildren.find((child)=>child.id===nodeId);
-
-    if(selectedNode){
-      selectedNode.title=label;
-    }else{
-      alert('there is no such node in the tree!')
+    if (selectedNode) {
+      selectedNode.title = label;
+    } else {
+      alert("there is no such node in the tree!");
     }
 
     setRootNode({ ...rootNode });
@@ -112,7 +119,7 @@ const TreeDiagram = () => {
         title={node.title}
         onAddChild={(label: string) => addChild(node, label)}
         onRemoveChild={() => removeNode(parent, node.id)}
-        onEditChild={(label)=>editNode(parent,node.id,label)}
+        onEditChild={(label) => editNode(parent, node.id, label)}
         nodeChildren={node.nodeChildren}
       >
         {node.nodeChildren.map((child) => renderNode(child, node))}

@@ -1,5 +1,5 @@
 import styles from "./nodeInput.module.css";
-import { useState, useRef, useEffect } from "react";
+import { useState,useEffect } from "react";
 
 interface InputNodeProps {
   label?: string;
@@ -19,7 +19,6 @@ const InputNode: React.FC<InputNodeProps> = ({
   editInputNode,
 }) => {
   const [nodeLabel, setNodeLabel] = useState("");
-  const focusRef = useRef<HTMLInputElement>(null);
 
   const onNodeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNodeLabel(e.target.value);
@@ -45,16 +44,14 @@ const InputNode: React.FC<InputNodeProps> = ({
   };
 
   useEffect(() => {
-    if (focusRef.current) {
-      focusRef.current.focus();
-    }
+
     if (isEditing) setNodeLabel(label || "");
-  }, [isEditing]);
+  }, [isEditing, label]);
 
   return (
     <form onSubmit={submit} className={styles["node-input-form"]}>
       <input
-        ref={focusRef}
+        autoFocus
         defaultValue={nodeLabel}
         type="text"
         placeholder="Category Name"
