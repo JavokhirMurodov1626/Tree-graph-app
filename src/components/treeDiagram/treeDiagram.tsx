@@ -10,7 +10,7 @@ const TreeDiagram: React.FC<{ zoomState: ZoomState }> = ({ zoomState }) => {
   const rootNodeRef = useRef<HTMLDivElement>(null);
 
   const [rootNode, setRootNode] = useState<TreeNodeModel>(
-    new TreeNodeModel("firstNode", [], 0)
+    new TreeNodeModel("Categories", [], 0)
   );
 
   const isClicked = useRef<boolean>(false);
@@ -67,9 +67,8 @@ const TreeDiagram: React.FC<{ zoomState: ZoomState }> = ({ zoomState }) => {
     movingArea.addEventListener("mousemove", mouseMoveHandler);
     movingArea.addEventListener("mouseleave", mouseUpHandler);
 
-
     //applying scale of tree zooming...
-    rootNodeRef.current.style.transform=`scale(${zoomState.zoomLevel/100})`
+    rootNodeRef.current.style.transform = `scale(${zoomState.zoomLevel / 100})`;
 
     return () => {
       rootNode.removeEventListener("mousedown", mouseDownHandler);
@@ -129,9 +128,11 @@ const TreeDiagram: React.FC<{ zoomState: ZoomState }> = ({ zoomState }) => {
 
   return (
     <section ref={movingAreaRef} className={styles["tree-playground"]}>
-      <div ref={rootNodeRef} className={`${styles.tree} tree`}>
-        {renderNode(rootNode)}
-      </div>
+      
+        <div ref={rootNodeRef} className={`${styles.tree} tree`}>
+          {renderNode(rootNode)}
+        </div>
+
     </section>
   );
 };
